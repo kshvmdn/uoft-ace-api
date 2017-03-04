@@ -63,27 +63,27 @@ Data source: http://www.ace.utoronto.ca/bookings.
         }]
         ```
 
-      - Example: [`/calendar/BA`](localhost:8080/calendar/ba)
+      - Example: [`/calendar/BA`](http://localhost:8080/calendar/ba)
 
     - `/calendar/{building:[a-zA-Z]+}/{room:[0-9a-zA-Z]+}`
 
-    - Retrieve a schedule for the current week for the room provided.
-    - Output format:
+      - Retrieve a schedule for the current week for the room provided.
+      - Output format:
 
-      ```js
-      {
-        room_number: String,
-        schedule: [{
-           date: String,
-           bookings: [{
-             time: String,
-             description: String
+        ```js
+        {
+          room_number: String,
+          schedule: [{
+             date: String,
+             bookings: [{
+               time: String,
+               description: String
+             }]
            }]
-         }]
-      }
-      ```
+        }
+        ```
 
-    - Example: [`/calendar/BA/1130`](localhost:8080/calendar/ba/1130)
+      - Example: [`/calendar/BA/1130`](http://localhost:8080/calendar/ba/1130)
 
 ### Contribute
 
