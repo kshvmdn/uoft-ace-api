@@ -71,7 +71,7 @@ func scrapeBuildingRooms(redis *redis.Client, building *Building) error {
 	})
 
 	var wg sync.WaitGroup
-	wg.Add(len(rooms) - 1)
+	wg.Add(len(rooms))
 
 	for _, roomNumber := range rooms {
 		go func(roomNumber string) {
