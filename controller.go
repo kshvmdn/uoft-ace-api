@@ -1,12 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"regexp"
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"gopkg.in/redis.v5"
@@ -42,7 +44,7 @@ func fetch(url string) (*http.Response, error) {
 	return resp, nil
 }
 
-func scrapeBuildingRooms(redis *redis.Client, building *Building) error {
+func scrapeBuildingRooms(client *redis.Client, building *Building) error {
 	resp, err := fetch(fmt.Sprintf("%sP3_BLDG:%s", baseUrl, building.Code))
 	if err != nil {
 		return err
@@ -77,7 +79,7 @@ func scrapeBuildingRooms(redis *redis.Client, building *Building) error {
 		go func(roomNumber string) {
 			defer wg.Done()
 			room := Room{Number: roomNumber}
-			scrapeSingleRoom(redis, building.Code, &room)
+			scrapeSingleRoom(client, building.Code, &room)
 			building.Rooms = append(building.Rooms, room)
 		}(roomNumber)
 	}
@@ -86,7 +88,23 @@ func scrapeBuildingRooms(redis *redis.Client, building *Building) error {
 	return nil
 }
 
-func scrapeSingleRoom(redis *redis.Client, buildingCode string, room *Room) error {
+func scrapeSingleRoom(client *redis.Client, buildingCode string, room *Room) error {
+	key := fmt.Sprintf("calendar:%s:%s", buildingCode, room.Number)
+
+	val, err := client.Get(key).Result()
+
+	if err != nil && err != redis.Nil {
+		return err
+	}
+
+	if err != redis.Nil {
+		err := json.Unmarshal([]byte(val), &room.Schedule)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
 	resp, err := fetch(fmt.Sprintf("%sP3_BLDG,P3_ROOM:%s,%s", baseUrl, buildingCode, room.Number))
 	if err != nil {
 		return err
@@ -134,6 +152,16 @@ func scrapeSingleRoom(redis *redis.Client, buildingCode string, room *Room) erro
 
 	for date, bookings := range dateMap {
 		room.Schedule = append(room.Schedule, Date{date, bookings})
+	}
+
+	b, err := json.Marshal(room.Schedule)
+	if err != nil {
+		return err
+	}
+
+	err = client.Set(key, b, time.Hour*4).Err()
+	if err != nil {
+		return err
 	}
 
 	return nil
