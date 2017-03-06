@@ -44,7 +44,6 @@ Data source: http://www.ace.utoronto.ca/bookings.
     - `/calendar/{building:[a-zA-Z]+}`
 
       - Retrieve a schedule for the current week for all the rooms of the building provided.
-      - Note that the order of rooms is **completely random** as of right now (see [this issue](https://github.com/kshvmdn/uoft-ace-api/issues/3) if you're interested in working on this).
       - Output format:
 
         ```js

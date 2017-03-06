@@ -14,9 +14,7 @@ import (
 	"gopkg.in/redis.v5"
 )
 
-const (
-	baseUrl string = "http://www.ace.utoronto.ca/bookings/f?p=200:3:0::NO::"
-)
+const baseUrl string = "http://www.ace.utoronto.ca/bookings/f?p=200:3:0::NO::"
 
 func fetch(url string) (*http.Response, error) {
 	client := &http.Client{
@@ -72,16 +70,18 @@ func scrapeBuildingRooms(client *redis.Client, building *Building) error {
 		rooms = append(rooms, value)
 	})
 
+	building.Rooms = make([]Room, len(rooms))
+
 	var wg sync.WaitGroup
 	wg.Add(len(rooms))
 
-	for _, roomNumber := range rooms {
-		go func(roomNumber string) {
+	for i, roomNumber := range rooms {
+		go func(i int, roomNumber string) {
 			defer wg.Done()
 			room := Room{Number: roomNumber}
 			scrapeSingleRoom(client, building.Code, &room)
-			building.Rooms = append(building.Rooms, room)
-		}(roomNumber)
+			building.Rooms[i] = room
+		}(i, roomNumber)
 	}
 
 	wg.Wait()

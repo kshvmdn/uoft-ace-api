@@ -27,10 +27,10 @@ type (
 	}
 )
 
-func getBuilding(redis *redis.Client, buildingCode string) (Building, error) {
+func getBuilding(client *redis.Client, buildingCode string) (Building, error) {
 	b := Building{Code: buildingCode}
 
-	err := scrapeBuildingRooms(redis, &b)
+	err := scrapeBuildingRooms(client, &b)
 	if err != nil {
 		return Building{}, err
 	}
@@ -38,10 +38,10 @@ func getBuilding(redis *redis.Client, buildingCode string) (Building, error) {
 	return b, nil
 }
 
-func getRoom(redis *redis.Client, buildingCode string, roomNumber string) (Room, error) {
+func getRoom(client *redis.Client, buildingCode string, roomNumber string) (Room, error) {
 	r := Room{Number: roomNumber}
 
-	err := scrapeSingleRoom(redis, buildingCode, &r)
+	err := scrapeSingleRoom(client, buildingCode, &r)
 	if err != nil {
 		return Room{}, err
 	}
