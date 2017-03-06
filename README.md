@@ -17,7 +17,7 @@ Data source: http://www.ace.utoronto.ca/bookings.
     $ go get github.com/kshvmdn/uoft-ace-api
     ```
 
-  - Build from source:
+  - Or, build directly from source:
 
     ```sh
     $ git clone https://github.com/kshvmdn/uoft-ace-api $GOPATH/src/github.com/kshvmdn/uoft-ace-api
@@ -27,7 +27,7 @@ Data source: http://www.ace.utoronto.ca/bookings.
 
 ### Usage
 
-  - Start Redis, Use `--daemonize yes` to run in background.
+  - Start Redis. Add `--daemonize yes` to run in background.
 
     ```sh
     $ redis-server [--daemonize yes]
@@ -44,6 +44,7 @@ Data source: http://www.ace.utoronto.ca/bookings.
     - `/calendar/{building:[a-zA-Z]+}`
 
       - Retrieve a schedule for the current week for all the rooms of the building provided.
+      - Note that the order of rooms is **completely random** as of right now (see [this issue](https://github.com/kshvmdn/uoft-ace-api/issues/3) if you're interested in working on this).
       - Output format:
 
         ```js
@@ -88,9 +89,3 @@ Data source: http://www.ace.utoronto.ca/bookings.
 ### Contribute
 
 This project is completely open source, feel free to [open an issue](https://github.com/kshvmdn/issues) for bugs/requests or [submit a pull request](https://github.com/kshvmdn/pulls)!
-
-##### TODO:
-
-  - [ ] Implement Redis to cache response data (boilerplate is partially implemented).
-  - [ ] Add URL parameters to specify dates (possibly date ranges as well).
-  - [ ] Determine an efficient way to sort room codes for a given building (right now the order is completely random).
